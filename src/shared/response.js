@@ -1,3 +1,5 @@
+const { t: typy } = require('typy')
+
 module.exports.successResponse = (callback, body, statusCode) => {
   const response = {
     statusCode: statusCode || 200,
@@ -13,11 +15,13 @@ module.exports.successResponse = (callback, body, statusCode) => {
 module.exports.errorResponse = (callback, error, statusCode) => {
   const response = {
     statusCode: statusCode || error.status || 500,
-    body: JSON.stringify({ error: 'Unable to process request.' }),
+    body: typy(error).isString ? JSON.stringify({ errorMessage: error.toString() }) : null,
     headers: {
       'Access-Control-Allow-Origin' : '*', // Required for CORS support to work
       'x-nd-version': process.env.VERSION,
     },
   }
-  callback(error, response)
+  const isTrueError = error instanceof Error
+  callback(isTrueError ? error : null, response)
+  return response
 }
