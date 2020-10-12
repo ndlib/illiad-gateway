@@ -1,13 +1,23 @@
 const fetch = require('node-fetch')
 const { t: typy } = require('typy')
-const { mapApiItems, requestHeaders } = require('./shared/helpers')
-const { successResponse } = require('./shared/response')
+const { mapApiItems, requestHeaders, isAuthorized } = require('./shared/helpers')
+const { successResponse, errorResponse } = require('./shared/response')
 const { sentryWrapper } = require('./shared/sentryWrapper')
 
 module.exports.handler = sentryWrapper(async (event, context, callback) => {
-  const netid = typy(event, 'requestContext.authorizer.netid').safeString
+  let netid = typy(event, 'requestContext.authorizer.netid').safeString
+  const params = typy(event, 'queryStringParameters').safeObjectOrEmpty
   const filter = encodeURIComponent("(TransactionStatus ne 'Request Finished') and not startswith(TransactionStatus, 'Cancel') and not (TransactionStatus eq 'Delivered to Web') and not (TransactionStatus eq 'Checked Out to Customer')")
   const url = `${process.env.ILLIAD_URL}/${netid}?$filter=${filter}`
+
+  if (!netid) {
+    if (isAuthorized(event, callback)) {
+      netid = params.netid
+    } else {
+      return
+    }
+  }
+
   console.log('requesting url', url)
 
   const response = await fetch(url, { headers: requestHeaders })
@@ -17,8 +27,7 @@ module.exports.handler = sentryWrapper(async (event, context, callback) => {
     }))
 
   if (response.statusCode < 200 || response.statusCode >= 300) {
-    // Technically use success because we handled the http error
-    return successResponse(callback, null, response.statusCode)
+    return errorResponse(callback, null, response.statusCode)
   }
 
   const results = mapApiItems(response.data)
