@@ -1,0 +1,114 @@
+{
+	"info": {
+		"_postman_id": "5468af50-cbd6-4bd0-b22d-ef996dc6cb47",
+		"name": "ILLiad Gateway - QA",
+		"description": "# Illiad Gateway API\n\nThis collection will run basic smoke tests to ensure that the API is running as expected.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Test Endpoint",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "10f1236a-12ef-492a-8bf3-4f04fb178c76",
+						"exec": [
+							"// Load the HTML into cheerio, which will let us easily select attributes for testing.",
+							"const $ = cheerio.load(pm.response.text());",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{illiadGatewayApiUrl}}/test",
+					"host": [
+						"{{illiadGatewayApiUrl}}"
+					],
+					"path": [
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test Unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "30a3cd88-34c0-4aad-89d5-d0a61d8bf646",
+						"exec": [
+							"// Load the HTML into cheerio, which will let us easily select attributes for testing.",
+							"const $ = cheerio.load(pm.response.text());",
+							"",
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{illiadGatewayApiUrl}}/borrowed",
+					"host": [
+						"{{illiadGatewayApiUrl}}"
+					],
+					"path": [
+						"borrowed"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "980b2e0d-c1a5-4af9-8e1f-1f9e7d801687",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "1cdcb4db-f099-4e2f-8a20-654573f6fd8a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "a3c82eba-91cd-491f-96ff-c53b894ff379",
+			"key": "illiadGatewayApiUrl",
+			"value": ""
+		}
+	],
+	"protocolProfileBehavior": {}
+}
