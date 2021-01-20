@@ -8,7 +8,6 @@ module.exports.handler = sentryWrapper(async (event, context, callback) => {
   let netid = typy(event, 'requestContext.authorizer.netid').safeString
   const params = typy(event, 'queryStringParameters').safeObjectOrEmpty
   const filter = encodeURIComponent("(TransactionStatus ne 'Request Finished') and not startswith(TransactionStatus, 'Cancel') and not (TransactionStatus eq 'Delivered to Web') and not (TransactionStatus eq 'Checked Out to Customer')")
-  const url = `${process.env.ILLIAD_URL}/${netid}?$filter=${filter}`
 
   if (!netid) {
     if (isAuthorized(event, callback)) {
@@ -18,6 +17,7 @@ module.exports.handler = sentryWrapper(async (event, context, callback) => {
     }
   }
 
+  const url = `${process.env.ILLIAD_URL}/${netid}?$filter=${filter}`
   console.log('requesting url', url)
 
   const response = await fetch(url, { headers: requestHeaders })
