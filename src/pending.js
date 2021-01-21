@@ -21,9 +21,9 @@ module.exports.handler = sentryWrapper(async (event, context, callback) => {
   console.log('requesting url', url)
 
   const response = await fetch(url, { headers: requestHeaders })
-    .then(res => ({
+    .then(async res => ({
       statusCode: res.status,
-      data: res.ok ? res.json() : null,
+      data: res.ok ? await res.json() : null,
     }))
 
   if (response.statusCode < 200 || response.statusCode >= 300) {
