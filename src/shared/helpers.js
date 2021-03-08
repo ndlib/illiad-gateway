@@ -26,7 +26,7 @@ module.exports.mapApiItems = (items) => {
       issn: item.ISSN,
       illNumber: item.ILLNumber,
       documentType: item.DocumentType,
-      renewalsAllowed: item.RenewalsAllowed,
+      renewable: item.RenewalsAllowed,
     }
 
     if (type === LOAN_TYPE) {
